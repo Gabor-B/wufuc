@@ -1,56 +1,99 @@
-# wufuc [![](https://ci.appveyor.com/api/projects/status/0s2unkpokttyslf0?svg=true)](https://ci.appveyor.com/project/zeffy/wufuc) [![Click here to tip wufuc on Gratipay!](https://img.shields.io/gratipay/team/wufuc.svg)](https://gratipay.com/wufuc/)
+# wufuc
+[![Donate Bitcoin](https://cdn.rawgit.com/zeffy/wufuc/badges/bitcoin.svg)](https://admin.gear.mycelium.com/gateways/3554/orders/new)
+[![AppVeyor Builds](https://img.shields.io/appveyor/ci/zeffy/wufuc.svg?logo=appveyor&style=flat-square)][AppVeyor]
+[![All Releases](https://img.shields.io/github/downloads/zeffy/wufuc/total.svg?style=flat-square)][Latest]
+[![Chat on Discord](https://img.shields.io/discord/421524706043101194.svg?label=discord&logo=discord&colorA=7078C2&colorB=7B81D8&style=flat-square)](https://discord.gg/G8PD2Wa)
 
-**English** | [русский](README.ru-RU.md) | [Français](README.fr-FR.md) | [Deutsch](README.de-DE.md) | [Magyar](README.hu-HU.md)
-
-[![Click here to lend your support to wufuc and make a donation at pledgie.com !](https://pledgie.com/campaigns/34055.png)](https://pledgie.com/campaigns/34055)
+[:de:] [:es:] [:fr:] [:it:] [:hungary:] [:brazil:] [:ru:] [:cn:] [:taiwan:]
 
 Disables the "Unsupported Hardware" message in Windows Update, and allows you to continue installing updates on Windows 7 and 8.1 systems with Intel Kaby Lake, AMD Ryzen, or other unsupported processors.
 
-## Downloads [![](https://img.shields.io/github/downloads/zeffy/wufuc/total.svg)](../../releases)
+## Downloads 
 
-### You can get the latest stable version [here](../../releases/latest)!
+**[Latest stable build][Latest] - Most people will want this version.**
 
-If you are feeling brave, you can try the latest unstable builds [here](https://ci.appveyor.com/project/zeffy/wufuc). **Use these at your own risk!**
+[Unstable builds][AppVeyor] - Probably contains bugs; do not report issues with these builds.
 
-## Sponsors
+## Donate :heart:
 
-### [Advanced Installer](http://www.advancedinstaller.com/)
-The installer packages are created with Advanced Installer on an open source license. Advanced Installer's intuitive and friendly user interface allowed me to quickly create a feature complete installer with minimal effort. [Check it out!](http://www.advancedinstaller.com/)
+[**Click here for donation options!**](https://github.com/zeffy/wufuc/blob/master/DONATE.md)
 
-## Reporting an issue [![](https://isitmaintained.com/badge/resolution/zeffy/wufuc.svg)](https://isitmaintained.com/project/zeffy/wufuc)
+## Background
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Preface
-
-The changelog for Windows updates KB4012218 and KB4012219 included the following:
+The release notes for Windows updates KB4012218 and KB4012219 included the following:
 
 > Enabled detection of processor generation and hardware support when PC tries to scan or download updates through Windows Update.
 
 These updates marked the implementation of a [policy change](https://blogs.windows.com/windowsexperience/2016/01/15/windows-10-embracing-silicon-innovation/) they announced some time ago, where Microsoft stated that they would not be supporting Windows 7 or 8.1 on next-gen Intel, AMD and Qualcomm processors.
 
-It is essentially a big middle finger to anyone who decides to not "upgrade" to the steaming pile of :shit: known as Windows 10, especially considering the extended support periods for Windows 7 and 8.1 won't be ending until January 4, 2020 and January 10, 2023 respectively.
+This is essentially a big middle finger to anyone who decides to not "upgrade" to Windows 10,
+and it is especially unfortunate considering the extended support periods for Windows 7 and 8.1 won't be ending until January 4, 2020 and January 10, 2023 respectively.
 
-This has even affected people with older Intel and AMD processors! I've received user reports of the [Intel Atom Z530](../../issues/7), [Intel Core i5-M 560](../../issues/23), [Intel Core i5-4300M](../../issues/24), [Intel Atom D525](../../issues/34), [Intel Pentium B940](../../issues/63), and [AMD FX-8350](../../issues/32) all being blocked from receiving updates.
+Some people with older Intel and AMD processors are also affected! I've received user reports of the following CPUs all being blocked from receiving updates:
+
+- [Intel Atom Z530](https://github.com/zeffy/wufuc/issues/7)
+- [Intel Atom D525](https://github.com/zeffy/wufuc/issues/34)
+- [Intel Core i5-M 560](https://github.com/zeffy/wufuc/issues/23)
+- [Intel Core i5-4300M](https://github.com/zeffy/wufuc/issues/24)
+- [Intel Core i7-4930K](https://github.com/zeffy/wufuc/issues/126)
+- [Intel Pentium B940](https://github.com/zeffy/wufuc/issues/63)
+- [AMD FX-6300](https://github.com/zeffy/wufuc/issues/135#issuecomment-367054217)
+- [AMD FX-8350](https://github.com/zeffy/wufuc/issues/32)
+- [AMD Turion 64 Mobile Technology ML-34](https://github.com/zeffy/wufuc/issues/80)
 
 ## Bad Microsoft!
 
-If you are interested, you can read my original write up on discovering the CPU check [here](../../tree/old-kb4012218-19).
+If you are interested, you can read my original write-up on discovering the CPU check [here](https://github.com/zeffy/wufuc/tree/old-kb4012218-19).
+
+The tl;dr version is basically, inside a system file named `wuaueng.dll`, there are two functions responsible for the CPU check: `IsDeviceServiceable(void)` and `IsCPUSupported(void)`. 
+`IsDeviceServiceable` simply calls `IsCPUSupported` once, and then re-uses the result that it receives on subsequent calls.
+
+## Features
+
+- Enables Windows Update on PCs with unsupported processors.
+- Written in C, the best programming language. :sunglasses:
+- Completely free (as in freedom) software.
+- Does not modify any system files.
+- Byte pattern-based patching, which means it will usually keep working even after new updates come out.
+- No dependencies.
+
+## Frequently Asked Questions
+
+See [FAQ.md](https://github.com/zeffy/wufuc/blob/master/FAQ.md).
 
 ## How it works
 
-Basically, inside a file called `wuaueng.dll` there are two functions: [`IsDeviceServiceable(void)`](https://gist.github.com/zeffy/e5ec266952932bc905eb0cbc6ed72185) and [`IsCPUSupported(void)`](https://gist.github.com/zeffy/1a8f8984d2bec97ae24af63a76278694). `IsDeviceServiceable(void)` is essentially a wrapper around `IsCPUSupported(void)` that caches the result it receives and recycles it on subsequent calls.
+This is a basic run-down of what wufuc does when you install it:
 
-My patch takes advantage of this result caching behavior by setting the "first run" value to `FALSE` and the cached result to `TRUE`.
+- The installer registers a scheduled task that automatically starts wufuc on system boot/user log on.
+- Depending on how the Windows Update service is configured to run, wufuc will:
+    * **Shared process**: inject itself into the service host process that Windows Update will run in when it starts.
+    * **Own process**: wait for the Windows Update service to start and then inject into it.
+- Once injected, wufuc will hook some functions where appropriate:
+    * `LoadLibraryExW` hook will automatically hook the `IsDeviceServiceable()` function inside `wuaueng.dll` when it is loaded.
+    * `RegQueryValueExW` hook is necessary to provide compatibility with [UpdatePack7R2](../../issues/100). This hook not applied when `wuauserv` is configured to run in its own process.
 
-- At system boot the wufuc scheduled task runs as the `NT AUTHORITY\SYSTEM` user.
-- `wufuc` determines what service host group process the Windows Update service runs in (typically `netsvcs`), and injects itself into it.
-- Once injected, it applies a hook to `LoadLibraryEx` that automatically patches `wuaueng.dll` when it is loaded.
-- Any previously loaded `wuaueng.dll` is also patched.
+## Sponsors
 
-### Several improvements over my batchfile method:
+### [Advanced Installer](https://www.advancedinstaller.com/)
 
-- **No system files are modified!**
-- Heuristic-based patching, which means it will usually keep working even after new updates come out.
-- C is best language!
-- No external dependencies.
+The installer packages are created with Advanced Installer using an [open source license](http://www.advancedinstaller.com/free-license.html). 
+Advanced Installer's intuitive and friendly user interface allowed me to quickly create a feature complete installer with minimal effort. Check it out!
+
+## Special thanks
+
+- Wen Jia Liu ([@wj32](https://github.com/wj32)) for his awesome program [Process Hacker](https://github.com/processhacker2/processhacker), and also for his [phnt headers](https://github.com/processhacker2/processhacker/tree/master/phnt).
+- Duncan Ogilvie ([@mrexodia](https://github.com/mrexodia)) for [x64dbg](https://github.com/x64dbg/x64dbg), its [`patternfind.cpp`](https://github.com/x64dbg/x64dbg/blob/development/src/dbg/patternfind.cpp) algorithm, and its issue template which I adapted for this project.
+- Tsuda Kageyu ([@TsudaKageyu](https://github.com/TsudaKageyu)) for his excellent [minhook](https://github.com/TsudaKageyu/minhook) library.
+
+[Latest]: https://github.com/zeffy/wufuc/releases/latest
+[AppVeyor]: https://ci.appveyor.com/project/zeffy/wufuc
+[:de:]: https://github.com/zeffy/wufuc/wiki/README-(Deutsch)
+[:es:]: https://github.com/zeffy/wufuc/wiki/README-(Espa%C3%B1ol)
+[:fr:]: https://github.com/zeffy/wufuc/wiki/README-(Fran%C3%A7ais)
+[:it:]: https://github.com/zeffy/wufuc/wiki/README-(Italiano)
+[:hungary:]: https://github.com/zeffy/wufuc/wiki/README-(Magyar)
+[:brazil:]: https://github.com/zeffy/wufuc/wiki/README-(Portugu%C3%AAs-Brasileiro)
+[:ru:]: https://github.com/zeffy/wufuc/wiki/README-(%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
+[:cn:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+[:taiwan:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87)
